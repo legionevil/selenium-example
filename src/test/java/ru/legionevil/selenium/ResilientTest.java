@@ -29,8 +29,8 @@ public class ResilientTest {
     }
 
     @Test
-    @DisplayName("Тест заголовка страницы")
-    void checkPageTitle() {
+    @DisplayName("Тест отработки драйвера и софт ассерта")
+    void checkDecoratedDriverSoftAssert() {
         String title = driver.getTitle();
         softAssert.assertNotNull(title);
         String pageSource = driver.getPageSource();
