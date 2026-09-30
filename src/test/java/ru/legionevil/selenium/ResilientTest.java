@@ -8,8 +8,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.asserts.SoftAssert;
 import ru.legionevil.core.ExceptionTranslatingDecorator;
+
+import java.time.Duration;
 
 public class ResilientTest {
     private final By readOnlyLocator = By.name("my-readonly");
@@ -29,16 +33,27 @@ public class ResilientTest {
     }
 
     @Test
-    @DisplayName("Тест отработки драйвера и софт ассерта")
-    void checkDecoratedDriverSoftAssert() {
+    @DisplayName("Тест отработки драйвера и софт ассерта с прерыванием")
+    void checkDecoratedDriverSoftAndHardAssert() {
         String title = driver.getTitle();
-        softAssert.assertNotNull(title);
+        softAssert.assertNotNull(title);// проверяем штатную работу ассертера
         String pageSource = driver.getPageSource();
-        softAssert.assertNotNull(pageSource);
-        softAssert.fail("просто 1 фэйл в софт ассерте");
-        softAssert.fail("просто 2 фэйл в софт ассерте");
-        driver.findElement(nonExistentLocator).click();
-        driver.findElement(readOnlyLocator).clear();
+        softAssert.assertNotNull(pageSource);// проверяем штатную работу ассертера
+        softAssert.fail("просто 1 фэйл в софт ассерте");// добавляем ошибку, показывающую отсутствие прерывания
+        driver.findElement(nonExistentLocator).click();// получаем ошибку поиска и прерываемся на клике хард ассертом
+        driver.findElement(readOnlyLocator).clear();// не доходим до этого шага
+    }
+
+    @Test
+    @DisplayName("Тест отработки драйвера и софт ассерта с ожиданием и без прерывания")
+    void checkDecoratedDriverWaitSoftAssert() {
+        String pageSource = driver.getPageSource();
+        softAssert.assertNotNull(pageSource);// проверяем штатную работу ассертера
+        softAssert.fail("просто 1 фэйл в софт ассерте");// добавляем ошибку, показывающую отсутствие прерывания
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(1)).pollingEvery(Duration.ZERO);
+        String text = wait.until(d -> driver.findElement(nonExistentLocator).getText());// получаем ошибку поиска
+        softAssert.assertEquals(text, "текст");// проверяем пустой текст из-за ошибки поиска
+        driver.findElement(readOnlyLocator).clear();// получаем ошибку выполнения неподходящего действия
     }
 
     @AfterEach
