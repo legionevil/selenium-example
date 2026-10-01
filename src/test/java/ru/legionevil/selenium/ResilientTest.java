@@ -15,6 +15,9 @@ import ru.legionevil.core.ExceptionTranslatingDecorator;
 
 import java.time.Duration;
 
+/**
+ * Использование selenium с модификациями, перевод и сборка ошибок, контроль исключений
+ */
 public class ResilientTest {
     private final By readOnlyLocator = By.name("my-readonly");
     private final By nonExistentLocator = By.name("non-existent");
