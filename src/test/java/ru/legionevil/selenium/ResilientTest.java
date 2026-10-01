@@ -28,7 +28,7 @@ public class ResilientTest {
         options.addArguments("--start-maximized");
 //        options.addArguments("--force-color-profile=srgb");// Принудительно устанавливаем цветовой профиль sRGB
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-         driver = new ExceptionTranslatingDecorator(softAssert).decorate(new ChromeDriver(options));
+        driver = new ExceptionTranslatingDecorator(softAssert).decorate(new ChromeDriver(options));
         driver.get("https://www.selenium.dev/selenium/web/web-form.html");
     }
 
