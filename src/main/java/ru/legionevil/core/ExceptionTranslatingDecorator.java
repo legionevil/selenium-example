@@ -33,7 +33,7 @@ public class ExceptionTranslatingDecorator extends WebDriverDecorator<WebDriver>
 
     // Главный метод для перехвата
     @Override
-    public @NonNull Object onError(@NonNull Decorated<?> target, @NonNull Method method, Object @NonNull [] args, @NonNull InvocationTargetException e) throws Throwable {
+    public @NonNull Object onError(@NonNull Decorated<?> target, @NonNull Method method, Object @NonNull [] args, @NonNull InvocationTargetException e) {
         // 1. Извлекаем оригинальное исключение Selenium
         Throwable originalException = e.getTargetException();
 
@@ -43,10 +43,15 @@ public class ExceptionTranslatingDecorator extends WebDriverDecorator<WebDriver>
         // 3. Коллекционируем
         softAssert.fail("Ошибка:", translated);
 
-        // 4. Бросаем переведенное исключение дальше (оно заменит оригинальное для вызывающего кода)?
-        // или не бросаем?
+        // 4. Бросаем переведенное исключение дальше (оно заменит оригинальное для вызывающего кода)
         Class<?> returnType = method.getReturnType();
-
+        if (translated instanceof SessionNotFoundUiException) {// сессия прервалась
+            // Используем Hard Assert из TestNG, чтобы мгновенно прервать тест
+            Assert.fail(String.format(
+                    "Критическая ошибка: Сессия прервалась!\n\t" +
+                            "Первоначальная ошибка: %s", translated.getMessage()
+            ));
+        }
         // Если упал поиск элемента, создаем заглушку и передаем в нее сообщение об ошибке
         if (returnType == WebElement.class) {
             return createNullWebElement(translated.getMessage());

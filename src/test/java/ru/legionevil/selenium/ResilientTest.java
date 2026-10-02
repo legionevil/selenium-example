@@ -59,6 +59,17 @@ public class ResilientTest {
         driver.findElement(readOnlyLocator).clear();// получаем ошибку выполнения неподходящего действия
     }
 
+    @Test
+    @DisplayName("Тест отработки драйвера и софт ассерта с пустой сессией")
+    void checkDecoratedDriverSoftAssertNoSession() {
+        String pageSource = driver.getPageSource();
+        softAssert.assertNotNull(pageSource);// проверяем штатную работу ассертера
+        softAssert.fail("просто 1 фэйл в софт ассерте");// добавляем ошибку, показывающую отсутствие прерывания
+        driver.quit();
+        driver.findElement(readOnlyLocator).clear();// ошибка с разрывом сессии
+        driver.findElement(nonExistentLocator).clear();// не доходим до этого шага
+    }
+
     @AfterEach
     void tearDown() {
         if (driver != null) driver.quit();
