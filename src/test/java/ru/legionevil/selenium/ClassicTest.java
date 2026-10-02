@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,6 +20,7 @@ public class ClassicTest {
     RemoteWebDriver driver;
 
     private final By readOnlyLocator = By.name("my-readonly");
+    private final By hiddenLocator = By.name("my-hidden");
     private final By nonExistentLocator = By.name("non-existent");
 
     @BeforeEach
@@ -36,6 +38,13 @@ public class ClassicTest {
     void checkClassicDriverStateException() {
         // получаем оригинальный InvalidElementStateException
         Assertions.assertThrows(InvalidElementStateException.class, () -> driver.findElement(readOnlyLocator).clear());
+    }
+
+    @Test
+    @DisplayName("Тест отработки ElementNotInteractableException")
+    void checkClassicDriverInteractException() {
+        // получаем оригинальный ElementNotInteractableException
+        Assertions.assertThrowsExactly(ElementNotInteractableException.class, () -> driver.findElement(hiddenLocator).click());
     }
 
     @Test
