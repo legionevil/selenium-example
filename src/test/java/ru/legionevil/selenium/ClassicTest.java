@@ -10,6 +10,8 @@ import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -61,6 +63,15 @@ public class ClassicTest {
         driver.quit();// закрываем драйвер и прерываем сессию
         // получаем оригинальный NoSuchSessionException
         Assertions.assertThrows(NoSuchSessionException.class, () -> driver.findElement(readOnlyLocator).click());
+    }
+
+    @Test
+    @DisplayName("Тест отработки StaleElementReferenceException")
+    void checkClassicDriverStaleException() {
+        WebElement element = driver.findElement(readOnlyLocator);// заранее находим элемент
+        driver.navigate().refresh();// обновляем страницу
+        // получаем оригинальный StaleElementReferenceException
+        Assertions.assertThrows(StaleElementReferenceException.class, element::click);
     }
 
     @AfterEach
