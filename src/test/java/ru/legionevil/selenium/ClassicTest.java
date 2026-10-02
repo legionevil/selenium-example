@@ -5,16 +5,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 /**
  * Классический пример использования selenium, без модификаций
@@ -72,6 +79,15 @@ public class ClassicTest {
         driver.navigate().refresh();// обновляем страницу
         // получаем оригинальный StaleElementReferenceException
         Assertions.assertThrows(StaleElementReferenceException.class, element::click);
+    }
+
+    @Test
+    @DisplayName("Тест отработки драйвера и софт ассерта с ожиданием и без прерывания")
+    void checkDecoratedDriverWaitSoftAssert() {
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ZERO).pollingEvery(Duration.ZERO);
+        Executable executable = () -> wait.until(d -> driver.findElement(nonExistentLocator).isDisplayed());
+        // получаем оригинальный TimeoutException
+        Assertions.assertThrows(TimeoutException.class, executable);
     }
 
     @AfterEach
