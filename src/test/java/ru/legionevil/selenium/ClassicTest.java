@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -52,6 +53,14 @@ public class ClassicTest {
     void checkClassicDriverNoElementException() {
         // получаем оригинальный NoSuchElementException
         Assertions.assertThrows(NoSuchElementException.class, () -> driver.findElement(nonExistentLocator).click());
+    }
+
+    @Test
+    @DisplayName("Тест отработки NoSuchSessionException")
+    void checkClassicDriverNoSessionException() {
+        driver.quit();// закрываем драйвер и прерываем сессию
+        // получаем оригинальный NoSuchSessionException
+        Assertions.assertThrows(NoSuchSessionException.class, () -> driver.findElement(readOnlyLocator).click());
     }
 
     @AfterEach
