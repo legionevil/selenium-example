@@ -53,10 +53,21 @@ public class ResilientTest {
         String pageSource = driver.getPageSource();
         softAssert.assertNotNull(pageSource);// проверяем штатную работу ассертера
         softAssert.fail("просто 1 фэйл в софт ассерте");// добавляем ошибку, показывающую отсутствие прерывания
-        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(1)).pollingEvery(Duration.ZERO);
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(1L)).pollingEvery(Duration.ZERO);
         String text = wait.until(d -> driver.findElement(nonExistentLocator).getText());// получаем ошибку поиска
         softAssert.assertEquals(text, "текст");// проверяем пустой текст из-за ошибки поиска
         driver.findElement(readOnlyLocator).clear();// получаем ошибку выполнения неподходящего действия
+    }
+
+    @Test
+    @DisplayName("Тест отработки драйвера и софт ассерта с ожиданием и прерыванием")
+    void checkDecoratedDriverWaitHardAssert() {
+        String pageSource = driver.getPageSource();
+        softAssert.assertNotNull(pageSource);// проверяем штатную работу ассертера
+        softAssert.fail("просто 1 фэйл в софт ассерте");// добавляем ошибку, показывающую отсутствие прерывания
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ZERO).pollingEvery(Duration.ZERO);
+        wait.until(d -> driver.findElement(nonExistentLocator).isDisplayed());// получаем ошибку поиска
+        driver.findElement(readOnlyLocator).clear();// не доходим до этого шага
     }
 
     @Test
